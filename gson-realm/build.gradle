@@ -39,3 +39,7 @@ dependencies {
     })
     testCompile 'junit:junit:4.12'
 }
+
+apply from: '../ext.gradle'
+apply from: '../publish1.gradle'
+apply from: '../publish2.gradle'
