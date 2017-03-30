@@ -4,10 +4,13 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
 
+import com.google.gson.Gson;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static org.junit.Assert.assertEquals;
+import io.realm.Realm;
+import xyz.truenight.support.realm.RealmSupportGsonFactory;
 
 /**
  * Instrumentation test, which will execute on an Android device.
@@ -20,7 +23,21 @@ public class ExampleInstrumentedTest {
     public void useAppContext() throws Exception {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getTargetContext();
+        Realm.init(appContext);
 
-        assertEquals("xyz.truenight.support.test", appContext.getPackageName());
+        Number id = Realm.getDefaultInstance().where(TestRealmObject.class).max("id");
+        id = id == null ? 1 : (id.intValue() + 1);
+        Realm.getDefaultInstance().beginTransaction();
+        Realm.getDefaultInstance().insertOrUpdate(new TestRealmObject(id.intValue(), "wow" + id));
+        Realm.getDefaultInstance().commitTransaction();
+
+        TestRealmObject objectProxy = Realm.getDefaultInstance().where(TestRealmObject.class).equalTo("id", id.intValue()).findFirst();
+
+        Gson gson = RealmSupportGsonFactory.create();
+        String json = gson.toJson(objectProxy);
+
+        gson.toJson(gson.fromJson(json, TestRealmObject.class));
     }
+
+
 }

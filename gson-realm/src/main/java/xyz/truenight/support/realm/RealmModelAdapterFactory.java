@@ -24,9 +24,11 @@ import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 
 import io.realm.RealmModel;
 import io.realm.RealmObject;
+import io.realm.internal.RealmObjectProxy;
 
 class RealmModelAdapterFactory implements TypeAdapterFactory {
 
@@ -58,16 +60,25 @@ class RealmModelAdapterFactory implements TypeAdapterFactory {
         @Override
         public void write(JsonWriter out, T value) throws IOException {
             value = clone(value);
-            gson.toJson(value, type.getType(), out);
+            Type typeOfSrc = convert(type);
+            gson.toJson(value, typeOfSrc, out);
         }
 
         @Override
         public T read(JsonReader in) throws IOException {
-            return gson.fromJson(in, type.getType());
+            return gson.fromJson(in, convert(type));
+        }
+
+        private Type convert(TypeToken<T> type) {
+            if (RealmObjectProxy.class.isAssignableFrom(type.getRawType())) {
+                return type.getRawType().getSuperclass();
+            } else {
+                return type.getType();
+            }
         }
 
         @SuppressWarnings("unchecked")
-        public final <E> E clone(E object) {
+        private <E> E clone(E object) {
             if (object == null) {
                 return null;
             }
