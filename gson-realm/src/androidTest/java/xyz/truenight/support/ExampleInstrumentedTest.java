@@ -33,8 +33,11 @@ public class ExampleInstrumentedTest {
 
         TestRealmObject objectProxy = Realm.getDefaultInstance().where(TestRealmObject.class).equalTo("id", id.intValue()).findFirst();
 
+        TestContainer container = new TestContainer(objectProxy);
+
         Gson gson = RealmSupportGsonFactory.create();
         String json = gson.toJson(objectProxy);
+        String containerJson = gson.toJson(container);
 
         gson.toJson(gson.fromJson(json, TestRealmObject.class));
     }

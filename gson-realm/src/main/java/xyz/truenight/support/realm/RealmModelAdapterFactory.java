@@ -32,26 +32,24 @@ import io.realm.internal.RealmObjectProxy;
 
 class RealmModelAdapterFactory implements TypeAdapterFactory {
 
-    private final Gson gson;
     private final RealmHook hook;
 
-    public RealmModelAdapterFactory(Gson gson, RealmHook hook) {
-        this.gson = gson;
+    public RealmModelAdapterFactory(RealmHook hook) {
         this.hook = hook;
     }
 
     @Override
     public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-        return new Adapter<>(this.gson, this.hook, type);
+        return new Adapter<>(new DelegateAdapter(gson, this), this.hook, type);
     }
 
     public static class Adapter<T> extends TypeAdapter<T> {
 
-        private final Gson gson;
+        private final DelegateAdapter gson;
         private final RealmHook hook;
         private final TypeToken<T> type;
 
-        public Adapter(Gson gson, RealmHook hook, TypeToken<T> type) {
+        public Adapter(DelegateAdapter gson, RealmHook hook, TypeToken<T> type) {
             this.gson = gson;
             this.hook = hook;
             this.type = type;
