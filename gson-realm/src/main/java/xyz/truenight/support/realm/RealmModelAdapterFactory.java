@@ -58,8 +58,7 @@ class RealmModelAdapterFactory implements TypeAdapterFactory {
         @Override
         public void write(JsonWriter out, T value) throws IOException {
             value = clone(value);
-            Type typeOfSrc = convert(type);
-            gson.toJson(value, typeOfSrc, out);
+            gson.toJson(value, convert(type), out);
         }
 
         @Override
