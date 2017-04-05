@@ -45,7 +45,7 @@ public final class RealmSupportGsonFactory {
     public static Gson create(GsonBuilder builder, RealmHook hook) {
         return builder
                 .registerTypeAdapterFactory(
-                        new RealmModelAdapterFactory(hook)
+                        new RealmModelAdapterFactory(builder.create(), hook)
                 )
                 .create();
     }
