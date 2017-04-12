@@ -26,6 +26,7 @@ import com.google.gson.stream.JsonWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
+import io.realm.Realm;
 import io.realm.RealmModel;
 import io.realm.RealmObject;
 import io.realm.internal.RealmObjectProxy;
@@ -91,7 +92,10 @@ class RealmModelAdapterFactory implements TypeAdapterFactory {
                 if (!(RealmObject.isManaged((RealmModel) object) && RealmObject.isValid((RealmModel) object))) {
                     return object;
                 }
-                return (E) hook.instance().copyFromRealm((RealmModel) object);
+                Realm instance = hook.instance();
+                E e = (E) instance.copyFromRealm((RealmModel) object);
+                instance.close();
+                return e;
             } else {
                 return object;
             }
