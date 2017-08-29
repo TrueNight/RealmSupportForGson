@@ -18,6 +18,9 @@ package xyz.truenight.support.realm;
 
 import io.realm.Realm;
 
+/**
+ * Should return new Realm instance and it will be closed after operations
+ */
 public interface RealmHook {
     Realm instance();
 }
