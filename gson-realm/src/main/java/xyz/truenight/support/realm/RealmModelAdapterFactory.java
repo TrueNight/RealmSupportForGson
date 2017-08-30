@@ -30,24 +30,24 @@ import io.realm.Realm;
 import io.realm.RealmModel;
 import io.realm.internal.RealmObjectProxy;
 
-/**
- *
- */
 class RealmModelAdapterFactory implements TypeAdapterFactory {
 
-    private final Gson optimized;
     private final RealmHook hook;
-    private final boolean checkInternalItems;
 
-    public RealmModelAdapterFactory(Gson optimized, RealmHook hook, boolean checkInternalItems) {
-        this.optimized = optimized;
+    public RealmModelAdapterFactory(RealmHook hook) {
         this.hook = hook;
-        this.checkInternalItems = checkInternalItems;
     }
 
     @Override
-    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> type) {
-        return new Adapter<>(gson, this.hook, type);
+    public <T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken) {
+        // in type can be real class (if it's internal field of any other class)
+        // or proxy (if it's direct call)
+        Class<? super T> rawType = typeToken.getRawType();
+        if (RealmModel.class.isAssignableFrom(rawType)) {
+            return new Adapter<>(gson, this.hook, typeToken);
+        } else {
+            return null;
+        }
     }
 
     public class Adapter<T> extends TypeAdapter<T> {
@@ -66,17 +66,15 @@ class RealmModelAdapterFactory implements TypeAdapterFactory {
         @Override
         public void write(JsonWriter out, T value) throws IOException {
             value = unmanage(value);
-            if (!checkInternalItems && value instanceof RealmModel) {
-                optimized.toJson(value, convert(type), out);
-            } else {
-                TypeAdapter<T> adapter = (TypeAdapter<T>) gson.getDelegateAdapter(RealmModelAdapterFactory.this, TypeToken.get(convert(type)));
-                adapter.write(out, value);
-            }
+            TypeAdapter<T> adapter = (TypeAdapter<T>) gson.getDelegateAdapter(RealmModelAdapterFactory.this, TypeToken.get(convert(type)));
+            adapter.write(out, value);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         public T read(JsonReader in) throws IOException {
-            return optimized.fromJson(in, convert(type));
+            TypeAdapter<T> adapter = (TypeAdapter<T>) gson.getDelegateAdapter(RealmModelAdapterFactory.this, TypeToken.get(convert(type)));
+            return adapter.read(in);
         }
 
         // convert Proxy type to original type

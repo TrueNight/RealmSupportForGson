@@ -8,11 +8,11 @@ package xyz.truenight.support;
  * Copyright © Mikhail Frolov
  */
 
-public class TestContainer {
+public class TestContainerRealmObject {
 
     public TestRealmObject object;
 
-    public TestContainer(TestRealmObject objectProxy) {
+    public TestContainerRealmObject(TestRealmObject objectProxy) {
         object = objectProxy;
     }
 

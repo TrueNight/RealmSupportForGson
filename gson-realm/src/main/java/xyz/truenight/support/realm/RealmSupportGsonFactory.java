@@ -34,105 +34,47 @@ public final class RealmSupportGsonFactory {
      * <p>
      * By default to unmanage {@link io.realm.RealmObject} used {@link io.realm.Realm} obtained by {@link io.realm.Realm#getDefaultInstance()}.
      * If you need specify the way to get {@link io.realm.Realm} instance use {@link #create(RealmHook)}
-     * <p>
-     * By default there is no checks of nested fields of unmanaged RealmObjects for the optimizations
-     * if you need this feature use {@link #create(boolean)} with checkInternalItems {@code true}
      */
     public static Gson create() {
-        return create(false);
-    }
-
-    /**
-     * Returns default {@link com.google.gson.Gson} instance which supports serialization of {@link io.realm.internal.RealmObjectProxy}.
-     * <p>
-     * By default to unmanage {@link io.realm.RealmObject} used {@link io.realm.Realm} obtained by {@link io.realm.Realm#getDefaultInstance()}.
-     * If you need specify the way to get {@link io.realm.Realm} instance use {@link #create(RealmHook, boolean)}
-     *
-     * @param checkInternalItems force check nested fields of {@link io.realm.RealmObject}
-     */
-    public static Gson create(boolean checkInternalItems) {
-        return create(new GsonBuilder(), checkInternalItems);
+        return create(new GsonBuilder());
     }
 
     /**
      * Returns {@link com.google.gson.Gson} instance which supports serialization of {@link io.realm.internal.RealmObjectProxy}.
-     *
+     * <p>
      * By default to unmanage {@link io.realm.RealmObject} used {@link io.realm.Realm} obtained by {@link io.realm.Realm#getDefaultInstance()}.
      * If you need specify the way to get {@link io.realm.Realm} instance use {@link #create(GsonBuilder, RealmHook)}
-     *
-     * By default there is no checks of nested fields of unmanaged RealmObjects for the optimizations
-     * if you need this feature use {@link #create(GsonBuilder, boolean)} with {@code true}
      *
      * @param builder builder with preset of params
      */
     public static Gson create(GsonBuilder builder) {
-        return create(builder, false);
-    }
-
-    /**
-     * Returns {@link com.google.gson.Gson} instance which supports serialization of {@link io.realm.internal.RealmObjectProxy}.
-     * <p>
-     * By default to unmanage {@link io.realm.RealmObject} used {@link io.realm.Realm} obtained by {@link io.realm.Realm#getDefaultInstance()}.
-     * If you need specify the way to get {@link io.realm.Realm} instance use {@link #create(GsonBuilder, RealmHook, boolean)}
-     *
-     * @param builder            builder with preset of params
-     * @param checkInternalItems force check nested fields of {@link io.realm.RealmObject}
-     */
-    public static Gson create(GsonBuilder builder, boolean checkInternalItems) {
         return create(builder, new RealmHook() {
             @Override
             public Realm instance() {
                 return Realm.getDefaultInstance();
             }
-        }, checkInternalItems);
+        });
     }
 
     /**
      * Returns {@link com.google.gson.Gson} instance which supports serialization of {@link io.realm.internal.RealmObjectProxy}.
-     *
-     * By default there is no checks of nested fields of unmanaged RealmObjects for the optimizations
-     * if you need this feature use {@link #create(RealmHook, boolean)} with {@code true}
      *
      * @param hook provider of {@link io.realm.Realm} which will be used to unmanage {@link io.realm.RealmObject} before serialization.
      */
     public static Gson create(RealmHook hook) {
-        return create(hook, false);
+        return create(new GsonBuilder(), hook);
     }
 
     /**
      * Returns {@link com.google.gson.Gson} instance which supports serialization of {@link io.realm.internal.RealmObjectProxy}.
-     *
-     * @param hook               provider of {@link io.realm.Realm} which will be used to unmanage {@link io.realm.RealmObject} before serialization.
-     * @param checkInternalItems force check nested fields of {@link io.realm.RealmObject}
-     */
-    public static Gson create(RealmHook hook, boolean checkInternalItems) {
-        return create(new GsonBuilder(), hook, checkInternalItems);
-    }
-
-    /**
-     * Returns {@link com.google.gson.Gson} instance which supports serialization of {@link io.realm.internal.RealmObjectProxy}.
-     *
-     * By default there is no checks of nested fields of unmanaged RealmObjects for the optimizations
-     * if you need this feature use {@link #create(GsonBuilder, RealmHook, boolean)} with {@code true}
      *
      * @param builder builder with preset of params
-     * @param hook provider of {@link io.realm.Realm} which will be used to unmanage {@link io.realm.RealmObject} before serialization.
+     * @param hook    provider of {@link io.realm.Realm} which will be used to unmanage {@link io.realm.RealmObject} before serialization.
      */
     public static Gson create(GsonBuilder builder, RealmHook hook) {
-        return create(builder, hook, false);
-    }
-
-    /**
-     * Returns {@link com.google.gson.Gson} instance which supports serialization of {@link io.realm.internal.RealmObjectProxy}.
-     *
-     * @param builder            builder with preset of params
-     * @param hook               provider of {@link io.realm.Realm} which will be used to unmanage {@link io.realm.RealmObject} before serialization.
-     * @param checkInternalItems force check nested fields of {@link io.realm.RealmObject}
-     */
-    public static Gson create(GsonBuilder builder, RealmHook hook, boolean checkInternalItems) {
         return builder
                 .registerTypeAdapterFactory(
-                        new RealmModelAdapterFactory(builder.create(), hook, checkInternalItems)
+                        new RealmModelAdapterFactory(hook)
                 )
                 .create();
     }
