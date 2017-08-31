@@ -4,3 +4,60 @@
 [![Javadoc](https://javadoc-emblem.rhcloud.com/doc/xyz.truenight.support/gson-realm/badge.svg)](http://www.javadoc.io/doc/xyz.truenight.support/gson-realm)
 
 Support for serializing RealmObject with Gson
+
+# Overview
+
+When you try to serialize RealmObject taken from database (Proxy) you will get StackOverflowException the library resolves that problem.
+
+# Installation
+
+Add dependency to your `build.gradle` file:
+
+```groovy
+dependencies {
+    compile 'xyz.truenight.support:gson-realm:1.2.0'
+}
+```
+
+or to your `pom.xml` if you're using Maven:
+
+```xml
+<dependency>
+  <groupId>xyz.truenight.support</groupId>
+  <artifactId>gson-realm</artifactId>
+  <version>1.2.0</version>
+  <type>pom</type>
+</dependency>
+```
+# Usage
+
+## Creating instance
+
+```java
+  // similar to new Gson() but with RealmObject serializing support
+  Gson gson = RealmSupportGsonFactory.create();
+  gson.toJson(someRealmObjectProxy);
+```
+## Creating instance with ``GsonBuilder``
+
+```java
+  // similar to new GsonBuilder().registerTypeAdapter(SomeRealmObject.class, new SomeRealmObjectAdapter()).create()
+  Gson gson = RealmSupportGsonFactory.create(new GsonBuilder()
+                .registerTypeAdapter(SomeRealmObject.class, new SomeRealmObjectAdapter()));
+  gson.toJson(someRealmObjectProxy);
+```
+
+## Specifying instance of ``Realm``
+
+By default library use ``Realm`` instance obtained by ``Realm.getDefaultInstance()`` but you can specify the way to get instance:
+
+```java
+  Gson gson = RealmSupportGsonFactory.create(new RealmHook() {
+      @Override
+      public Realm instance() {
+          return Realm.getInstance(myRealmConfiguration);
+      }
+  });
+  gson.toJson(someRealmObjectProxy);
+```
+
