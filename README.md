@@ -7,7 +7,7 @@ Support for serializing RealmObject with Gson
 
 # Overview
 
-When you try to serialize RealmObject taken from database (Proxy) you will get StackOverflowException the library resolves that problem.
+When you try to serialize ``RealmObject`` taken from database (Proxy) you will get ``StackOverflowError`` the library resolves that problem.
 
 # Installation
 
