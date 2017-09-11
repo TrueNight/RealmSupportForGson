@@ -5,8 +5,8 @@ ext {
 
     publishedGroupId = 'xyz.truenight.support'
 
-    siteUrl = 'https://github.com/TrueNight/RxIAPv3'
-    gitUrl = 'https://github.com/TrueNight/RxIAPv3.git'
+    siteUrl = 'https://github.com/TrueNight/RealmSupportForGson'
+    gitUrl = 'https://github.com/TrueNight/RealmSupportForGson.git'
 
     developerId = 'TrueNight'
     developerName = 'Mikhail Frolov'
