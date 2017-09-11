@@ -27,7 +27,6 @@ if (JavaVersion.current().isJava8Compatible()) {
 allprojects {
     repositories {
         jcenter()
-        maven { url "https://jitpack.io" }
     }
 }
 
